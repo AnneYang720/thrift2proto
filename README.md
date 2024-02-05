@@ -1,0 +1,1 @@
+# thrift2proto
