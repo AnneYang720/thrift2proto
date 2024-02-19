@@ -1,6 +1,8 @@
 from proto_schema_parser import ast
-from ptsd.ast import Map, Set, List  # Container types
-from ptsd.ast import I16, I32, I64, Binary, Bool, Byte, Double, String # Basic types
+from ptsd.ast import Field
+from ptsd.ast import List, Map, Set  # Container types
+
+from .common import basicTypeConverter, isBasicType
 
 
 def GenMessageFromStruct(struct):
@@ -12,7 +14,6 @@ def GenMessageFromStruct(struct):
 
 
 def GenMessageFromType(name, type):
-    print("GenMessageFromType ", name, type)
     if isinstance(type, Map):
         message_name = str(name) + '_map'
         elements = GenElements(1, message_name + "_e", type)
@@ -34,7 +35,7 @@ def GenMessageFromType(name, type):
     return message_name, message
 
 
-def GenElements(i, field_name, field_type) -> [ast.Field]:
+def GenElements(i, field_name, field_type) -> [Field]:
     if isBasicType(field_type):
         t = basicTypeConverter(field_type)
         return [GenBasicField(field_name, i, t)]
@@ -102,7 +103,6 @@ def GenMapField(name, number, key_type, value_type):
 
 
 def GenListField(name, number, type):
-    print(name, number, type)
     return ast.Field(
         name=name, number=number, type=type, cardinality=ast.FieldCardinality.REPEATED
     )
@@ -110,34 +110,3 @@ def GenListField(name, number, type):
 
 def GenSetField(name, number, type):
     return ast.MapField(name=name, number=number, key_type=type, value_type="bool")
-
-
-def isBasicType(input):
-    if (
-        isinstance(input, I64)
-        or isinstance(input, I32)
-        or isinstance(input, I16)
-        or isinstance(input, Byte)
-        or isinstance(input, String)
-        or isinstance(input, Bool)
-        or isinstance(input, Binary)
-        or isinstance(input, Double)
-    ):
-        return True
-    else:
-        return False
-
-
-def basicTypeConverter(input):
-    if isinstance(input, I64):
-        return "int64"
-    elif isinstance(input, I32) or isinstance(input, I16) or isinstance(input, Byte):
-        return "int32"
-    elif isinstance(input, String):
-        return "string"
-    elif isinstance(input, Bool):
-        return "bool"
-    elif isinstance(input, Binary):
-        return "bytes"
-    elif isinstance(input, Double):
-        return "double"

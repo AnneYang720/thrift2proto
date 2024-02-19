@@ -43,7 +43,7 @@ def Thrift2Proto(input_file, output_file):
     for _, v in mapped.structs.items():
         file_element = util_struct.GenMessageFromStruct(v)
         output.file_elements.append(file_element)
-    
+
     # exception
     for _, v in mapped.exceptions.items():
         file_element = util_struct.GenMessageFromStruct(v)
